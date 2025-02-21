@@ -7,15 +7,17 @@ import locale
 STRINGS = {
     "title": "Token Calculator",
     "description": "This app calculates the token count for your text or PDF files.",
-    "results_header": "Results",
-    "token_count_label": "Total tokens for {encoding} encoding",
+    "results_header": "Token Calculation Results",
+    "token_count_label": "Total Tokens",
+    "encoding_used_label": "Encoding Used",
+    "token_explanation": "Your input is broken down into {tokens} tokens using the '{encoding}' encoding. Tokens are units of text processed by AI models.",
     "input_method_label": "Choose your input method",
     "text_input_label": "Input your text here",
     "pdf_upload_label": "Upload a PDF file",
     "pdf_content_label": "Content extracted from your PDF",
     "encoding_label": "Select encoding",
     "encoding_help": "Choose an encoding to use for token calculation.",
-    "calculate_button": "Calculate tokens",
+    "calculate_button": "Calculate Tokens",
     "warning_no_input": "Please provide text or upload a PDF file.",
     "info": "Token calculation completed."
 }
@@ -62,7 +64,31 @@ def main():
     if st.session_state["token_result"]:
         tokens, encoding = st.session_state["token_result"]
         st.subheader(STRINGS["results_header"])
-        st.write(f"**{STRINGS['token_count_label'].format(encoding=encoding)}**: {tokens}")
+
+        # Center the token count using a single centered column
+        col1, col2, col3 = st.columns([1, 2, 1])  # Middle column wider for emphasis
+        with col2:  # Use the middle column to ensure centering
+            st.markdown(
+                f"<div style='text-align: center;'>"
+                f"<h1 style='color: #FFFF00; border: 3px solid black; padding: 5px 10px; display: inline-block; background-color: #000000; margin: 0;'>{tokens:,}</h1>"
+                f"<p style='font-size: 1.2em; margin-top: 5px;'>{STRINGS['token_count_label']}</p>"
+                f"</div>",
+                unsafe_allow_html=True
+            )
+
+        # Secondary details in a balanced layout
+        col1, col2 = st.columns([1, 1])
+        with col1:
+            st.write(f"**{STRINGS['encoding_used_label']}**: {encoding}")
+        with col2:
+            st.write("")  # Empty for balance (optional additional info could go here)
+
+        # Explanation below, also centered
+        st.markdown(
+            f"<p style='text-align: center;'>{STRINGS['token_explanation'].format(tokens=f'{tokens:,}', encoding=encoding)}</p>",
+            unsafe_allow_html=True
+        )
+        st.divider()
 
     # Input form
     input_method = st.radio(STRINGS["input_method_label"], ("Text", "PDF Upload"))
